@@ -1,0 +1,11 @@
+{
+    "name": "harsiu/sharpspring_integration",
+    "description": "Drupal form integration with sharpspring",
+    "type": "drupal-module",
+    "authors": [
+      {
+        "name": "Haris Šiukšta"
+      }
+    ],
+    "license": "GPL-2.0+"
+  }
