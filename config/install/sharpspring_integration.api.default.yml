@@ -1,0 +1,6 @@
+# The id of the config entity.
+id: 'default'
+# Api account ID
+accountId: 'Sharpspring account ID'
+# Api Api secret
+secretKey: 'Sharpspring account secret key'

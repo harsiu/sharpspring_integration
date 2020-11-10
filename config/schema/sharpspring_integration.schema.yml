@@ -1,0 +1,50 @@
+# Schema for the configuration files of the Sharpspring Integration module.
+
+sharpspring_integration.api.*:
+  type: config_entity
+  label: 'Sharpspring Api'
+  mapping:
+    id:
+      type: string
+      label: 'Api id'
+    uuid:
+      type: string
+      label: 'UUID'
+    accountId:
+      type: string
+      label: 'Sharpspring owner account ID'
+    secretKey:
+      type: string
+      label: 'The account secret key'
+
+sharpspring_integration.lead.*:
+  type: config_entity
+  label: 'Sharpspring lead request config'
+  mapping:
+    id:
+      type: string
+      label: 'Lead entity id'
+    uuid:
+      type: string
+      label: 'UUID'
+    firstName:
+      type: string
+      label: 'First name field ID'
+    lastName:
+      type: string
+      label: 'Last name field ID'
+    emailAddress:
+      type: string
+      label: 'Email field ID'
+    phoneNumber:
+      type: string
+      label: 'Phone number field ID'
+    companyName:
+      type: string
+      label: 'Company name field ID'
+    website:
+      type: string
+      label: 'Website url field ID'
+    description:
+      type: string
+      label: 'Description field ID'
