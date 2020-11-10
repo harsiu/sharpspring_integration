@@ -1,0 +1,10 @@
+# Tabs in the configuration page
+sharpspring_integration.api_tab:
+  route_name: entity.api.list
+  title: Api Settings
+  base_route: entity.api.list
+
+sharpspring_integration.forms_tab:
+  route_name: entity.lead.list
+  title: Enabled Forms
+  base_route: entity.api.list

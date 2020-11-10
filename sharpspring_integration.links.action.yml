@@ -1,0 +1,19 @@
+# Action buttons in the configuration pages
+sharpspring_integration.lead_add_action:
+  route_name: entity.lead.add_form
+  title: 'Add webform configuration'
+  appears_on:
+    - entity.lead.list
+
+sharpspring_integration.lead_list_action:
+  route_name: entity.lead.list
+  title: 'List configured webforms'
+  appears_on:
+    - entity.lead.add_form
+    - entity.lead.edit_form
+
+sharpspring_integration.api_list_action:
+  route_name: entity.api.list
+  title: 'List Api'
+  appears_on:
+    - entity.api.edit_form

@@ -1,0 +1,19 @@
+# Menu links
+sharpspring_integration.admin_config:
+  title: 'Sharpspring integration settings'
+  parent: system.admin_config
+  route_name: entity.api.list
+  weight: 30
+
+system.admin_sharpspring_api:
+  title: 'Configure API'
+  route_name: entity.api.list
+  parent: sharpspring_integration.admin_config
+  weight: 30
+
+system.admin_sharpspring_form:
+  title: 'Configure form fields'
+  route_name: entity.lead.list
+  parent: sharpspring_integration.admin_config
+  weight: 30
+

@@ -1,0 +1,4 @@
+# Define the administer permission for editing API and managing forms.
+'administer sharpspring':
+  title: 'Administer sharpspring'
+  description: 'Edit API settings, manage all sharpspring webform settings'

@@ -1,0 +1,56 @@
+<?php
+
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\sharpspring_integration\Utility\HelperFunctions;
+
+/**
+ * Use this function to find the ID of the webform,
+ * then call a function as the form is submitted.
+ *
+ * @param array $form
+ * @param FormStateInterface $form_state
+ * @param string $form_id
+ * @throws InvalidPluginDefinitionException
+ * @throws PluginNotFoundException
+ */
+function sharpspring_integration_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  $query = \Drupal::entityTypeManager()->getStorage('lead')->load($form_id);
+
+  if (!empty($query)) {
+    $form['actions']['submit']['#submit'][] = 'sharpspring_integration_webform_submit_handler';
+  }
+}
+
+/**
+ * Function to be called when a webform that exists in sharpspring integration
+ * form list is called
+ *
+ * @param array $form
+ * @param FormStateInterface $form_state
+ *
+ * @return false
+ * @throws InvalidPluginDefinitionException
+ * @throws PluginNotFoundException
+ */
+function sharpspring_integration_webform_submit_handler($form, FormStateInterface $form_state) {
+  // api config
+  $api = \Drupal::entityTypeManager()->getStorage('api')->load('default');
+  $utility = new HelperFunctions;
+
+  if (empty($api->accountId) || empty($api->secretKey)) {
+    \Drupal::logger('sharpspring_integration')->error("Missing sharpspring settings. Please check your API configuration");
+    return false;
+  }
+
+  //lead config for submitted form
+  $form_fields = \Drupal::entityTypeManager()->getStorage('lead')->load($form['form_id']['#value']);
+  /**
+   * @param $form_values
+   *   Array of key values pairs where:
+   *   - key is lead field name from Sharpspring
+   *   - value is value of submitted form field
+   */
+  $form_values = $utility->get_values($form_fields, $form_state);
+}
