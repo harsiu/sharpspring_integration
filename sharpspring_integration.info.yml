@@ -1,6 +1,6 @@
 name: 'Sharpspring Integration'
 type: module
-description: 'Create Sharpspring leads from webform submission data'
+description: 'Create Sharpspring leads from form submission data'
 package: Integrations
 core: 8.x
 core_version_requirement: ^8 || ^9

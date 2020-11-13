@@ -133,7 +133,7 @@ class ApiFormBase extends EntityForm {
    *   An array of supported actions for the current entity form.
    */
   protected function actions(array $form, FormStateInterface $form_state) {
-    // Get the basic actins from the base class.
+    // Get the basic actions from the base class.
     $actions = parent::actions($form, $form_state);
 
     // Change the submit button text.
@@ -174,13 +174,13 @@ class ApiFormBase extends EntityForm {
 
     if ($status == SAVED_UPDATED) {
       // If we edited an existing entity...
-      $this->messenger()->addMessage($this->t('Api %address has been updated.', ['%address' => $api->address]));
-      $this->logger('sharpspring_integration')->notice('Api %address has been updated.', ['%address' => $api->address, 'link' => $edit_link]);
+      $this->messenger()->addMessage($this->t('API %address has been updated.', ['%address' => $api->address]));
+      $this->logger('sharpspring_integration')->notice('API %address has been updated.', ['%address' => $api->address, 'link' => $edit_link]);
     }
     else {
       // If we created a new entity...
-      $this->messenger()->addMessage($this->t('Api %address has been added.', ['%address' => $api->address]));
-      $this->logger('sharpspring_integration')->notice('Api %address has been added.', ['%address' => $api->address, 'link' => $edit_link]);
+      $this->messenger()->addMessage($this->t('API %address has been added.', ['%address' => $api->address]));
+      $this->logger('sharpspring_integration')->notice('API %address has been added.', ['%address' => $api->address, 'link' => $edit_link]);
     }
 
     // Redirect the user back to the listing route after the save operation.

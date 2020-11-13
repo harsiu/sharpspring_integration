@@ -11,7 +11,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *
  * @ConfigEntityType(
  *   id = "api",
- *   label = @Translation("Api"),
+ *   label = @Translation("API"),
  *   admin_permission = "administer sharpspring",
  *   handlers = {
  *     "access" = "Drupal\sharpspring_integration\ApiAccessController",

@@ -2,11 +2,11 @@
 
 sharpspring_integration.api.*:
   type: config_entity
-  label: 'Sharpspring Api'
+  label: 'Sharpspring API'
   mapping:
     id:
       type: string
-      label: 'Api id'
+      label: 'API id'
     uuid:
       type: string
       label: 'UUID'
@@ -27,6 +27,9 @@ sharpspring_integration.lead.*:
     uuid:
       type: string
       label: 'UUID'
+    leadStatus:
+      type: string
+      label: 'Default lead status'
     firstName:
       type: string
       label: 'First name field ID'

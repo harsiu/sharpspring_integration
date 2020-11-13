@@ -3,83 +3,144 @@
 
 namespace Drupal\sharpspring_integration\Utility;
 
-use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
-use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Component\Serialization\Json;
 
 class HelperFunctions {
+
   /**
-   * Get form values from form fields specified in Sharpspring forms settings
-   * Loop over form settings and get all configured form field values
+   * Get submitted form values from fields configured in Sharpspring forms.
+   * Loop over form settings and get all configured field values
    *
    * @param EntityInterface $form_fields Lead Form config entity
    * @param FormStateInterface $form_state
+   *
    * @return array
    */
   public function get_values($form_fields, FormStateInterface $form_state) {
-    $form_values = [];
+    $lead = [];
 
-    foreach ($form_fields as $lead_setting => $lead_setting_value) {
-      switch ($lead_setting) {
-        case ($lead_setting == 'uuid' || $lead_setting == 'id'):
+    foreach ($form_fields as $lead_api_field => $form_field) {
+      switch ($lead_api_field) {
+        case ($lead_api_field == 'uuid' || $lead_api_field == 'id'):
         {
+          break;
+        }
+        case ($lead_api_field == 'leadStatus'):
+        {
+          if (!empty($form_field)) {
+            $lead[$lead_api_field] = $form_field;
+          }
           break;
         }
         default:
         {
-          if (!empty($lead_setting_value)) {
-            $form_values[$lead_setting] = $form_state->getValue($lead_setting_value);
+          if (!empty($form_field)) {
+            $lead_value = $form_state->getValue($form_field);
+
+            if (!empty($lead_value)) {
+              $lead[$lead_api_field] = $lead_value;
+            }
           }
         }
       }
     }
 
-    return $form_values;
+    return $lead;
   }
 
   /**
-   * Send the collected data to Sharpspring Api
+   * Send lead to Sharpspring API using specified method
    *
-   * @param string $url Api address
-   * @param array $request request data
-   * @return boolean
-   * @throws InvalidPluginDefinitionException
-   * @throws PluginNotFoundException
+   * @param string $url request url
+   * @param string $method method used in API request
+   * @param array $request request body
+   *
+   * @return int
    */
-  public function send_request($url, &$request) {
+  public function send_lead($url, $method, $request) {
     $logger = \Drupal::logger('sharpspring_integration');
-
-    // api config
-    $api = \Drupal::entityTypeManager()->getStorage('api')->load('default');
-    $account_id = (string) $api->accountId;
-    $account_secret = (string) $api->secretKey;
-
-    if (empty($account_id) || empty($account_secret)) {
-      $logger->error("Could not create Lead. Please check your API settings");
-      return false;
-    }
+    $data = $this->form_request($method, $request);
+    $status_code = 0;
 
     try {
-      $response = \Drupal::httpClient()->post($url, ['json' => $request]);
-      $data = json_decode($response->getBody());
-      // DBLog messages
-      if ($response->getStatusCode() == 200) {
-        if ($data->success) {
-          $logger->notice('Lead created successfully');
-        }
-        else {
-          $logger->warning('Lead API error: ' . $data->error);
-        }
+      $response = \Drupal::httpClient()->post($url, [
+        'headers' => [
+          'Content-Type' => 'application/json',
+          'Content-Length' => strlen($data),
+          'Expect',
+        ],
+        'body' => $data,
+      ]);
+
+      $body = json_decode($response->getBody());
+      if ($method == 'createLeads') {
+        $success = $body->result->creates[0]->success;
+        $status_message = 'Lead has been created';
       }
       else {
-        $logger->error('Sharpspring API error: <br />' . $data->error);
+        $success = $body->result->updates[0]->success;
+        $status_message = 'Lead has been updated';
+      }
+
+      switch ($response->getStatusCode()) {
+        case 200:
+        {
+          if (isset($success) && $success) {
+            $status_code = 200;
+            $logger->notice($status_message);
+          }
+          else {
+            if (isset($success) && !$success) {
+              $status_code = $body->error[0]->code;
+              $status_message = $body->error[0]->message;
+            }
+            else {
+              $status_code = $body->error->code;
+              $status_message = $body->error->message;
+            }
+          }
+
+          break;
+        }
+        default :
+        {
+          $logger->notice("API error: <br><br>" . "API responded with status code " .
+            $response->getStatusCode());
+
+          break;
+        }
+      }
+
+      if ($method == 'createLeads' && ($status_code != 301 && $status_code != 200)) {
+        $logger->notice("API method createLeads returned error " .
+          $status_code . ": <br>" . $status_message);
       }
     } catch (RequestException $e) {
       $logger->error($e->getMessage());
     }
+
+    return $status_code;
   }
 
+  /**
+   * @param string $method Method used in request
+   * @param array $request request body
+   *
+   * @return false|string
+   */
+  public function form_request($method, $request) {
+    $request_id = substr(md5(time()), 0, 14); //random string
+
+    $data = [
+      'method' => $method,
+      'params' => ['objects' => [$request]],
+      'id' => $request_id,
+    ];
+
+    return Json::encode($data);
+  }
 
 }

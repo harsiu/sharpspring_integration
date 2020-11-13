@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Class ApiEditForm.
  *
- * Provides the edit form for our Api entity.
+ * Provides the edit form for our API entity.
  *
  * @ingroup sharpspring_integration
  */
@@ -28,7 +28,7 @@ class ApiEditForm extends ApiFormBase {
    */
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
-    $actions['submit']['#value'] = $this->t('Update Api');
+    $actions['submit']['#value'] = $this->t('Update API');
     return $actions;
   }
 }

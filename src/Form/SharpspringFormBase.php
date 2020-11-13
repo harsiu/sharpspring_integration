@@ -42,7 +42,8 @@ class SharpspringFormBase extends EntityForm {
    * @return SharpspringFormBase|static
    */
   public static function create(ContainerInterface $container) {
-    $form = new static($container->get('entity_type.manager')->getStorage('lead'));
+    $form = new static($container->get('entity_type.manager')
+      ->getStorage('lead'));
     $form->setMessenger($container->get('messenger'));
     return $form;
   }
@@ -78,10 +79,23 @@ class SharpspringFormBase extends EntityForm {
       '#disabled' => !$lead->isNew(),
     ];
 
+    $form['leadStatus'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Lead status'),
+      '#options' => [
+        'unqualified' => $this->t('Unqualified'),
+        'open' => $this->t('Open'),
+        'qualified' => $this->t('Qualified'),
+        'contact' => $this->t('Contact'),
+        'customer' => $this->t('Customer'),
+      ],
+      '#default_value' => $lead->leadStatus,
+    ];
+
     $form['lead_info'] = [
       '#type' => 'details',
-      '#open' => true,
-      '#title' => $this->t('Contact information fields'),
+      '#open' => TRUE,
+      '#title' => $this->t('Lead information fields'),
     ];
 
     $form['lead_info']['firstName'] = [
@@ -89,7 +103,6 @@ class SharpspringFormBase extends EntityForm {
       '#title' => $this->t('First name field ID'),
       '#maxlength' => 255,
       '#default_value' => $lead->firstName,
-      '#required' => TRUE,
     ];
 
     $form['lead_info']['lastName'] = [
@@ -97,7 +110,6 @@ class SharpspringFormBase extends EntityForm {
       '#title' => $this->t('Last name field ID'),
       '#maxlength' => 255,
       '#default_value' => $lead->lastName,
-      '#required' => TRUE,
     ];
 
     $form['lead_info']['emailAddress'] = [
@@ -179,7 +191,7 @@ class SharpspringFormBase extends EntityForm {
    *   An array of supported actions for the current entity form.
    */
   protected function actions(array $form, FormStateInterface $form_state) {
-    // Get the basic actins from the base class.
+    // Get the basic actions from the base class.
     $actions = parent::actions($form, $form_state);
 
     // Change the submit button text.
@@ -207,6 +219,7 @@ class SharpspringFormBase extends EntityForm {
    *   An associative array containing the structure of the form.
    * @param FormStateInterface $form_state
    *   An associative array containing the current state of the form.
+   *
    * @return int|void
    * @throws EntityMalformedException
    * @throws EntityStorageException
@@ -224,16 +237,27 @@ class SharpspringFormBase extends EntityForm {
 
     if ($status == SAVED_UPDATED) {
       // If we edited an existing entity...
-      $this->messenger()->addMessage($this->t('Sharpspring Form %id has been updated.', ['%id' => $lead->id]));
-      $this->logger('sharpspring_integration')->notice('Sharpspring Form %id has been updated.', ['%id' => $lead->id, 'link' => $edit_link]);
+      $this->messenger()
+        ->addMessage($this->t('Sharpspring Form %id has been updated.', ['%id' => $lead->id]));
+      $this->logger('sharpspring_integration')
+        ->notice('Sharpspring Form %id has been updated.', [
+          '%id' => $lead->id,
+          'link' => $edit_link,
+        ]);
     }
     else {
       // If we created a new entity...
-      $this->messenger()->addMessage($this->t('Sharpspring Form %id has been added.', ['%id' => $lead->id]));
-      $this->logger('sharpspring_integration')->notice('Sharpspring Form %id has been added.', ['%id' => $lead->id, 'link' => $edit_link]);
+      $this->messenger()
+        ->addMessage($this->t('Sharpspring Form %id has been added.', ['%id' => $lead->id]));
+      $this->logger('sharpspring_integration')
+        ->notice('Sharpspring Form %id has been added.', [
+          '%id' => $lead->id,
+          'link' => $edit_link,
+        ]);
     }
 
     // Redirect the user back to the listing route after the save operation.
     $form_state->setRedirect('entity.lead.list');
   }
+
 }

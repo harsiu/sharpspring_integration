@@ -32,6 +32,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   config_export = {
  *     "id",
  *     "uuid",
+ *     "leadStatus",
  *     "firstName",
  *     "lastName",
  *     "emailAddress",
@@ -57,6 +58,13 @@ class Lead extends ConfigEntityBase {
    * @var string
    */
   public $uuid;
+
+  /**
+   * Default status for lead submitting this form.
+   *
+   * @var string
+   */
+  public $leadStatus;
 
   /**
    * Webform firstName field ID.
@@ -94,7 +102,7 @@ class Lead extends ConfigEntityBase {
   public $companyName;
 
   /**
-   * Webforom website field ID.
+   * Webform website field ID.
    *
    * @var string
    */

@@ -2,6 +2,7 @@
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\sharpspring_integration\Utility\HelperFunctions;
 
@@ -45,12 +46,28 @@ function sharpspring_integration_webform_submit_handler($form, FormStateInterfac
   }
 
   //lead config for submitted form
-  $form_fields = \Drupal::entityTypeManager()->getStorage('lead')->load($form['form_id']['#value']);
+  $lead_fields = \Drupal::entityTypeManager()->getStorage('lead')->load($form['form_id']['#value']);
+
   /**
-   * @param $form_values
+   * @param $lead
    *   Array of key values pairs where:
-   *   - key is lead field name from Sharpspring
-   *   - value is value of submitted form field
+   *   - key is lead field ID from Sharpspring API
+   *   - value is submitted form field value for specific lead field ID
    */
-  $form_values = $utility->get_values($form_fields, $form_state);
+  $lead = $utility->get_values($lead_fields, $form_state);
+  $account_id = (string) $api->accountId;
+  $account_secret = (string) $api->secretKey;
+  $query_string = UrlHelper::buildQuery([
+    'accountID' => $account_id,
+    'secretKey' => $account_secret,
+  ]);
+  $url = "https://api.sharpspring.com/pubapi/v1/?" . $query_string;
+
+  $create_response = $utility->send_lead($url, 'createLeads', $lead);
+
+  if($create_response == 301) {
+    $utility->send_lead($url, 'updateLeads', $lead);
+  }
+
+  return true;
 }

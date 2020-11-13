@@ -1,6 +1,6 @@
 # Menu links
 sharpspring_integration.admin_config:
-  title: 'Sharpspring integration settings'
+  title: 'Sharpspring integration'
   parent: system.admin_config
   route_name: entity.api.list
   weight: 30

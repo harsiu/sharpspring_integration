@@ -3,7 +3,7 @@ entity.api.list:
   path: '/admin/config/sharpspring-integration/api'
   defaults:
     _entity_list: api
-    _title: 'Api'
+    _title: 'API'
   requirements:
     _permission: 'administer sharpspring'
 
@@ -20,14 +20,14 @@ entity.lead.list:
   path: '/admin/config/sharpspring-integration/forms'
   defaults:
     _entity_list: lead
-    _title: 'Integrated webforms'
+    _title: 'Integrated forms'
   requirements:
     _permission: 'administer sharpspring'
 
 entity.lead.add_form:
   path: '/admin/config/sharpspring-integration/form/add'
   defaults:
-    _title: 'Add webform config'
+    _title: 'Add form config'
     _entity_form: lead.add
   requirements:
     _permission: 'administer sharpspring'
@@ -35,7 +35,7 @@ entity.lead.add_form:
 entity.lead.edit_form:
   path: '/admin/config/sharpspring-integration/form/{lead}/edit'
   defaults:
-    _title: 'Edit webform config'
+    _title: 'Edit form config'
     _entity_form: lead.edit
   requirements:
     _permission: 'administer sharpspring'
@@ -43,7 +43,7 @@ entity.lead.edit_form:
 entity.lead.delete_form:
   path: '/admin/config/sharpspring-integration/form/{lead}/delete'
   defaults:
-    _title: 'Delete webform config'
+    _title: 'Delete form config'
     _entity_form: lead.delete
   requirements:
     _permission: 'administer sharpspring'
