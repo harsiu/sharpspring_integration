@@ -28,10 +28,17 @@ class HelperFunctions {
         {
           break;
         }
-        case ($lead_api_field == 'leadStatus'):
+        case ($lead_api_field == 'leadStatus' || $lead_api_field == 'ownerID'):
         {
           if (!empty($form_field)) {
             $lead[$lead_api_field] = $form_field;
+          }
+          break;
+        }
+        case ($lead_api_field == 'isUnsubscribed'):
+        {
+          if (isset($form_field)) {
+            $lead[$lead_api_field] = (int) !$form_field;
           }
           break;
         }
@@ -64,6 +71,7 @@ class HelperFunctions {
     $logger = \Drupal::logger('sharpspring_integration');
     $data = $this->form_request($method, $request);
     $status_code = 0;
+    $success = FALSE;
 
     try {
       $response = \Drupal::httpClient()->post($url, [
@@ -76,30 +84,51 @@ class HelperFunctions {
       ]);
 
       $body = json_decode($response->getBody());
-      if ($method == 'createLeads') {
-        $success = $body->result->creates[0]->success;
-        $status_message = 'Lead has been created';
+
+      if (empty($body)) {
+        return 0;
       }
-      else {
-        $success = $body->result->updates[0]->success;
-        $status_message = 'Lead has been updated';
+
+      switch ($method) {
+        case 'createLeads':
+        {
+          $body = $body->result->creates[0];
+          if (!empty($body->success)) {
+            $success = $body->success;
+          }
+          $status_message = 'Lead has been created';
+
+          break;
+        }
+        case 'updateLeads':
+        {
+          $body = $body->result->updates[0];
+          if (!empty($body->success)) {
+            $success = $body->success;
+          }
+          $status_message = 'Lead has been updated';
+
+          break;
+        }
       }
 
       switch ($response->getStatusCode()) {
         case 200:
         {
-          if (isset($success) && $success) {
-            $status_code = 200;
-            $logger->notice($status_message);
-          }
-          else {
-            if (isset($success) && !$success) {
-              $status_code = $body->error[0]->code;
-              $status_message = $body->error[0]->message;
+          switch ($success) {
+            case TRUE:
+            {
+              $status_code = 200;
+              $logger->notice($status_message);
+
+              break;
             }
-            else {
+            default:
+            {
               $status_code = $body->error->code;
               $status_message = $body->error->message;
+
+              break;
             }
           }
 

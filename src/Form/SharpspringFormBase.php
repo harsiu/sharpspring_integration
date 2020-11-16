@@ -92,6 +92,13 @@ class SharpspringFormBase extends EntityForm {
       '#default_value' => $lead->leadStatus,
     ];
 
+    $form['ownerID'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Lead owner account ID'),
+      '#maxlength' => 255,
+      '#default_value' => $lead->ownerID,
+    ];
+
     $form['lead_info'] = [
       '#type' => 'details',
       '#open' => TRUE,
@@ -146,6 +153,13 @@ class SharpspringFormBase extends EntityForm {
       '#title' => $this->t('Lead description field ID'),
       '#maxlength' => 255,
       '#default_value' => $lead->description,
+    ];
+
+    $form['lead_info']['isUnsubscribed'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Lead opt-in field ID'),
+      '#maxlength' => 255,
+      '#default_value' => $lead->isUnsubscribed,
     ];
 
     // Return the form.

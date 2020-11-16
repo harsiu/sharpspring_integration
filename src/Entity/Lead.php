@@ -32,6 +32,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   config_export = {
  *     "id",
  *     "uuid",
+ *     "ownerID",
  *     "leadStatus",
  *     "firstName",
  *     "lastName",
@@ -40,6 +41,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "companyName",
  *     "website",
  *     "description",
+ *     "isUnsubscribed",
  *   }
  * )
  */
@@ -53,65 +55,79 @@ class Lead extends ConfigEntityBase {
   public $id;
 
   /**
-   * The Lead entity UUID.
+   * The Lead entity UUID
    *
    * @var string
    */
   public $uuid;
 
   /**
-   * Default status for lead submitting this form.
+   * Lead owner ID
+   *
+   * @var string
+   */
+  public $ownerID;
+
+  /**
+   * Lead status
    *
    * @var string
    */
   public $leadStatus;
 
   /**
-   * Webform firstName field ID.
+   * Lead first name
    *
    * @var string
    */
   public $firstName;
 
   /**
-   * Webform lastName field ID.
+   * Lead last name
    *
    * @var string
    */
   public $lastName;
 
   /**
-   * Webform emailAddress field ID.
+   * Lead email address
    *
    * @var string
    */
   public $emailAddress;
 
   /**
-   * Webform phoneNumber field ID.
+   * Lead phone number
    *
    * @var string
    */
   public $phoneNumber;
 
   /**
-   * Webform companyName field ID.
+   * Lead company name
    *
    * @var string
    */
   public $companyName;
 
   /**
-   * Webform website field ID.
+   * Lead website
    *
    * @var string
    */
   public $website;
 
   /**
-   * Webform description field ID.
+   * Lead description
    *
    * @var array
    */
   public $description;
+
+  /**
+   * Lead opt-in status
+   *
+   * @var tinyint
+   */
+  public $isUnsubscribed;
 }

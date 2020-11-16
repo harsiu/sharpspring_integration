@@ -27,6 +27,9 @@ sharpspring_integration.lead.*:
     uuid:
       type: string
       label: 'UUID'
+    ownerID:
+      type: string
+      label: 'Lead owner account ID'
     leadStatus:
       type: string
       label: 'Default lead status'
@@ -51,3 +54,6 @@ sharpspring_integration.lead.*:
     description:
       type: string
       label: 'Description field ID'
+    isUnsubscribed:
+      type: int
+      label: 'Email opt-in status field ID'
