@@ -13,6 +13,7 @@ use Drupal\sharpspring_integration\Utility\HelperFunctions;
  * @param array $form
  * @param FormStateInterface $form_state
  * @param string $form_id
+ *
  * @throws InvalidPluginDefinitionException
  * @throws PluginNotFoundException
  */
@@ -41,12 +42,14 @@ function sharpspring_integration_webform_submit_handler($form, FormStateInterfac
   $utility = new HelperFunctions;
 
   if (empty($api->accountId) || empty($api->secretKey)) {
-    \Drupal::logger('sharpspring_integration')->error("Missing sharpspring settings. Please check your API configuration");
-    return false;
+    \Drupal::logger('sharpspring_integration')
+      ->error("Missing sharpspring settings. Please check your API configuration");
+    return FALSE;
   }
 
   //lead config for submitted form
-  $lead_fields = \Drupal::entityTypeManager()->getStorage('lead')->load($form['form_id']['#value']);
+  $lead_fields = \Drupal::entityTypeManager()->getStorage('lead')
+    ->load($form['form_id']['#value']);
 
   /**
    * @param $lead
@@ -65,9 +68,9 @@ function sharpspring_integration_webform_submit_handler($form, FormStateInterfac
 
   $create_response = $utility->send_lead($url, 'createLeads', $lead);
 
-  if($create_response == 301) {
+  if ($create_response == 301) {
     $utility->send_lead($url, 'updateLeads', $lead);
   }
 
-  return true;
+  return TRUE;
 }

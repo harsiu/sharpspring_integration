@@ -51,6 +51,8 @@ class HelperFunctions {
               $lead[$lead_api_field] = $lead_value;
             }
           }
+
+          break;
         }
       }
     }
