@@ -46,7 +46,12 @@ class HelperFunctions {
         {
           if (!empty($form_field)) {
             foreach ($form_field as $key => $setting) {
-              $lead[$setting['systemName']] = $form_state->getValue($setting['field']);
+              $system_name = $setting['systemName'];
+              $form_value = $form_state->getValue($setting['field']);
+
+              if (!empty($form_value)) {
+                $lead[$system_name] = $form_value;
+              }
             }
           }
 
