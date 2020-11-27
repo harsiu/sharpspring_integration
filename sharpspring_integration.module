@@ -26,6 +26,7 @@ function sharpspring_integration_form_alter(array &$form, FormStateInterface $fo
   }
 
   $query = \Drupal::entityTypeManager()->getStorage('lead')->load($form_id);
+
   if (!empty($query)) {
     $form['actions']['submit']['#submit'][] = 'sharpspring_integration_webform_submit_handler';
   }
@@ -38,7 +39,7 @@ function sharpspring_integration_form_alter(array &$form, FormStateInterface $fo
       if (!empty($base_form_id) && $base_form_id != $form_id) {
         $query = \Drupal::entityTypeManager()
           ->getStorage('lead')
-          ->load($form_id);
+          ->load($base_form_id);
 
         if (!empty($query)) {
           $form['actions']['submit']['#submit'][] = 'sharpspring_integration_webform_submit_handler';
