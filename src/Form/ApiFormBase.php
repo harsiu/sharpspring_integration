@@ -174,13 +174,13 @@ class ApiFormBase extends EntityForm {
 
     if ($status == SAVED_UPDATED) {
       // If we edited an existing entity...
-      $this->messenger()->addMessage($this->t('API %address has been updated.', ['%address' => $api->address]));
-      $this->logger('sharpspring_integration')->notice('API %address has been updated.', ['%address' => $api->address, 'link' => $edit_link]);
+      $this->messenger()->addMessage($this->t('API has been updated.'));
+      $this->logger('sharpspring_integration')->notice('API has been updated.', ['link' => $edit_link]);
     }
     else {
       // If we created a new entity...
-      $this->messenger()->addMessage($this->t('API %address has been added.', ['%address' => $api->address]));
-      $this->logger('sharpspring_integration')->notice('API %address has been added.', ['%address' => $api->address, 'link' => $edit_link]);
+      $this->messenger()->addMessage($this->t('API has been added.'));
+      $this->logger('sharpspring_integration')->notice('API has been added.', ['link' => $edit_link]);
     }
 
     // Redirect the user back to the listing route after the save operation.

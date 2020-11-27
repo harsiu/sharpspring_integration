@@ -42,6 +42,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "website",
  *     "description",
  *     "isUnsubscribed",
+ *     "customFields",
  *   }
  * )
  */
@@ -127,7 +128,14 @@ class Lead extends ConfigEntityBase {
   /**
    * Lead opt-in status
    *
-   * @var tinyint
+   * @var boolean
    */
   public $isUnsubscribed;
+
+  /**
+   * Custom fields.
+   *
+   * @var array
+   */
+  public $customFields;
 }

@@ -3,6 +3,7 @@
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Form\BaseFormIdInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\sharpspring_integration\Utility\HelperFunctions;
 
@@ -18,10 +19,32 @@ use Drupal\sharpspring_integration\Utility\HelperFunctions;
  * @throws PluginNotFoundException
  */
 function sharpspring_integration_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
-  $query = \Drupal::entityTypeManager()->getStorage('lead')->load($form_id);
+  $is_admin = \Drupal::service('router.admin_context')->isAdminRoute();
 
+  if ($is_admin) {
+    return FALSE;
+  }
+
+  $query = \Drupal::entityTypeManager()->getStorage('lead')->load($form_id);
   if (!empty($query)) {
     $form['actions']['submit']['#submit'][] = 'sharpspring_integration_webform_submit_handler';
+  }
+  else {
+    $form_object = $form_state->getFormObject();
+
+    if ($form_object instanceof BaseFormIdInterface) {
+      $base_form_id = $form_object->getBaseFormId();
+
+      if (!empty($base_form_id) && $base_form_id != $form_id) {
+        $query = \Drupal::entityTypeManager()
+          ->getStorage('lead')
+          ->load($form_id);
+
+        if (!empty($query)) {
+          $form['actions']['submit']['#submit'][] = 'sharpspring_integration_webform_submit_handler';
+        }
+      }
+    }
   }
 }
 

@@ -57,3 +57,13 @@ sharpspring_integration.lead.*:
     isUnsubscribed:
       type: int
       label: 'Email opt-in status field ID'
+  customFields:
+    type: mapping
+    label: 'Custom field settings'
+    mapping:
+      systemName:
+        type: string
+        label: 'Lead custom field system name'
+      field:
+        type: string
+        label: 'Form field ID'
