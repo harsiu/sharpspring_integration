@@ -67,8 +67,10 @@ class SharpspringFormBase extends EntityForm {
     $lead = $this->entity;
 
     $remove_custom_field = $form_state->get('removeCustomField');
-
     $custom_field_count = $form_state->get('customFieldCount');
+
+    $remove_custom_value = $form_state->get('removeCustomValue');
+    $custom_value_count = $form_state->get('customValueCount');
 
     if (empty($custom_field_count) && !empty($lead->customFields)) {
       $form_state->set('customFieldCount', count($lead->customFields));
@@ -78,6 +80,17 @@ class SharpspringFormBase extends EntityForm {
       if (empty($custom_field_count) && empty($lead->customFields)) {
         $form_state->set('customFieldCount', 0);
         $custom_field_count = $form_state->get('customFieldCount');
+      }
+    }
+
+    if (empty($custom_value_count) && !empty($lead->customValues)) {
+      $form_state->set('customValueCount', count($lead->customValues));
+      $custom_value_count = $form_state->get('customValueCount');
+    }
+    else {
+      if (empty($custom_value_count) && empty($lead->customValues)) {
+        $form_state->set('customValueCount', 0);
+        $custom_value_count = $form_state->get('customValueCount');
       }
     }
 
@@ -186,8 +199,6 @@ class SharpspringFormBase extends EntityForm {
       '#attributes' => ['id' => 'lead-fieldset-wrapper'],
     ];
 
-    \Drupal::service('router.admin_context')->isAdminRoute();
-
     for ($index = 0; $index < $custom_field_count; $index++) {
       $api_field = isset($lead->customFields[$index]['systemName']) ? $lead->customFields[$index]['systemName'] : '';
       $form_field = isset($lead->customFields[$index]['field']) ? $lead->customFields[$index]['field'] : '';
@@ -240,6 +251,71 @@ class SharpspringFormBase extends EntityForm {
       '#submit' => array('::addElement'),
       '#ajax' => [
         'wrapper' => 'lead-fieldset-wrapper',
+        'callback' => '::actionCallback',
+      ],
+    ];
+
+    $form['customValues'] = [
+      '#type' => 'details',
+      '#open' => TRUE,
+      '#tree' => TRUE,
+      '#title' => $this->t('Lead field to custom value'),
+      '#description' => $this->t('Set custom values for any Lead API fields.'),
+      '#attributes' => ['id' => 'lead-value-fieldset-wrapper'],
+    ];
+
+    for ($index = 0; $index < $custom_value_count; $index++) {
+      $api_field = isset($lead->customValues[$index]['systemName']) ? $lead->customValues[$index]['systemName'] : '';
+      $value = isset($lead->customValues[$index]['value']) ? $lead->customValues[$index]['value'] : '';
+
+      $form['customValues'][$index] = [
+        '#type' => 'details',
+        '#open' => FALSE,
+        '#title' => ($api_field != '') ?
+          $this->t("Sharpspring field '" . $api_field . "' settings") :
+          $this->t('Field setting #' . ($index + 1)),
+      ];
+
+      $form['customValues'][$index]['systemName'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Lead field system name from Sharpspring'),
+        '#maxlength' => 255,
+        '#default_value' => $api_field,
+      ];
+
+      $form['customValues'][$index]['value'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Value'),
+        '#description' => $this->t('Lead field value'),
+        '#maxlength' => 255,
+        '#default_value' => $value,
+      ];
+
+      $form['customValues'][$index]['remove'] = [
+        '#type' => 'submit',
+        '#value' => t('Remove'),
+        '#name' => 'value-' . $index,
+        '#submit' => array('::removeElement'),
+        '#ajax' => [
+          'wrapper' => 'lead-value-fieldset-wrapper',
+          'callback' => '::actionCallback',
+        ],
+      ];
+
+      if (isset($remove_custom_value[$index])) {
+        $form['customValues'][$index]['#disabled'] = TRUE;
+        $form['customValues'][$index]['remove']['#attributes'] = array('disabled' => 'disabled');
+        $form['customValues'][$index]['#title'] = $form['customValues'][$index]['#title'] . ' (Marked for removal)';
+      }
+    }
+
+    $form['customValues']['add'] = [
+      '#type' => 'submit',
+      '#value' => t('Add custom value'),
+      '#name' => 'value',
+      '#submit' => array('::addElement'),
+      '#ajax' => [
+        'wrapper' => 'lead-value-fieldset-wrapper',
         'callback' => '::actionCallback',
       ],
     ];
@@ -306,8 +382,8 @@ class SharpspringFormBase extends EntityForm {
    *   An associative array containing the current state of the form.
    */
   public function addElement(&$form, FormStateInterface $form_state) {
-    $triggerd_element = $form_state->getTriggeringElement();
-    $trigger = explode('-', $triggerd_element['#name']);
+    $triggered_element = $form_state->getTriggeringElement();
+    $trigger = explode('-', $triggered_element['#name']);
     $type = isset($trigger[0]) ? $trigger[0] : '';
 
     switch ($type) {
@@ -317,14 +393,20 @@ class SharpspringFormBase extends EntityForm {
         $form_state->set("customFieldCount", ($custom_field_count + 1));
         break;
       }
+      case 'value':
+      {
+        $custom_value_count = $form_state->get("customValueCount");
+        $form_state->set("customValueCount", ($custom_value_count + 1));
+        break;
+      }
     }
 
     $form_state->setRebuild();
   }
 
   public function removeElement(&$form, FormStateInterface $form_state) {
-    $triggerd_element = $form_state->getTriggeringElement();
-    $trigger = explode('-', $triggerd_element['#name']);
+    $triggered_element = $form_state->getTriggeringElement();
+    $trigger = explode('-', $triggered_element['#name']);
     $type = $trigger[0];
     $index = $trigger[1];
 
@@ -334,6 +416,13 @@ class SharpspringFormBase extends EntityForm {
         $remove_custom_field = $form_state->get("removeCustomField");
         $remove_custom_field[$index] = 1;
         $form_state->set("removeCustomField", $remove_custom_field);
+        break;
+      }
+      case 'value':
+      {
+        $remove_custom_value = $form_state->get("removeCustomValue");
+        $remove_custom_value[$index] = 1;
+        $form_state->set("removeCustomValue", $remove_custom_value);
         break;
       }
     }
@@ -349,14 +438,18 @@ class SharpspringFormBase extends EntityForm {
    * @return mixed
    */
   public function actionCallback($form, FormStateInterface $form_state) {
-    $triggerd_element = $form_state->getTriggeringElement();
-    $trigger = explode('-', $triggerd_element['#name']);
+    $triggered_element = $form_state->getTriggeringElement();
+    $trigger = explode('-', $triggered_element['#name']);
     $type = isset($trigger[0]) ? $trigger[0] : '';
 
     switch ($type) {
       case 'field':
       {
         return $form['customFields'];
+      }
+      case 'value':
+      {
+        return $form['customValues'];
       }
     }
   }
@@ -389,11 +482,18 @@ class SharpspringFormBase extends EntityForm {
     $lead = $this->getEntity();
 
     $remove_custom_field = $form_state->get("removeCustomField");
+    $remove_custom_value = $form_state->get("removeCustomValue");
 
     // Go through the array and delete the elements
     if (!empty($remove_custom_field)) {
       foreach ($remove_custom_field as $key => $value) {
         unset($lead->customFields[$key]);
+      }
+    }
+
+    if (!empty($remove_custom_value)) {
+      foreach ($remove_custom_value as $key => $value) {
+        unset($lead->customValues[$key]);
       }
     }
 

@@ -43,6 +43,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "description",
  *     "isUnsubscribed",
  *     "customFields",
+ *     "customValues",
  *   }
  * )
  */
@@ -138,4 +139,11 @@ class Lead extends ConfigEntityBase {
    * @var array
    */
   public $customFields;
+
+  /**
+   * Custom fields.
+   *
+   * @var array
+   */
+  public $customValues;
 }

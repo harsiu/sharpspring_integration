@@ -57,6 +57,21 @@ class HelperFunctions {
 
           break;
         }
+        case ($lead_api_field == 'customValues'):
+        {
+          if (!empty($form_field)) {
+            foreach ($form_field as $key => $setting) {
+              $system_name = $setting['systemName'];
+              $form_value = $setting['value'];
+
+              if (!empty($form_value)) {
+                $lead[$system_name] = $form_value;
+              }
+            }
+          }
+
+          break;
+        }
         default:
         {
           if (!empty($form_field)) {

@@ -67,3 +67,13 @@ sharpspring_integration.lead.*:
       field:
         type: string
         label: 'Form field ID'
+  customValues:
+    type: mapping
+    label: 'Custom value settings'
+    mapping:
+      systemName:
+        type: string
+        label: 'Lead custom field system name'
+      value:
+        type: string
+        label: 'Custom value for Lead field'
